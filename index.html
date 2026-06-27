@@ -31,7 +31,7 @@
   .btn-primary:active{background:var(--mid);transform:scale(.98)}
   .btn-secondary{background:var(--light);color:var(--dark)}
   .btn-danger{background:#fde8e8;color:var(--red)}
-  .chips{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+  .chips{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
   .chip{background:var(--card);border-radius:12px;padding:14px;box-shadow:var(--shadow);text-align:center}
   .chip .val{font-size:1.2rem;font-weight:800;color:var(--dark)}
   .chip .lbl{font-size:.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;margin-top:2px}
@@ -187,7 +187,10 @@ function clearCfg() {
 // ── API: todo via GET a Apps Script ───────────────────────────────
 async function api(params) {
   const qs = new URLSearchParams(params).toString();
-  const resp = await fetch(`${CFG.url}?${qs}`);
+  const resp = await fetch(`${CFG.url}?${qs}`, {
+    redirect: 'follow',
+    method: 'GET'
+  });
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
   const data = await resp.json();
   if (!data.ok) throw new Error(data.error || 'Error desconocido');
@@ -329,12 +332,15 @@ function renderHoy(trips) {
     else if (t==='tpv') tpv+=r.total||0;
     else resto+=r.total||0;
   });
+  const clientes = total - ef - tpv;
   chips.innerHTML = `
-    <div class="chip full highlight"><div class="val">${fmt(total)}</div><div class="lbl">Total del día</div></div>
-    <div class="chip"><div class="val">${trips.length}</div><div class="lbl">Trayectos</div></div>
+    <div class="chip full"><div class="val">${trips.length}</div><div class="lbl">Trayectos del día</div></div>
+    <div class="chip highlight"><div class="val">${fmt(total)}</div><div class="lbl">Total día</div></div>
     <div class="chip"><div class="val">${fmt(peajes)}</div><div class="lbl">Peajes</div></div>
     <div class="chip"><div class="val">${fmt(ef)}</div><div class="lbl">Efectivo</div></div>
-    <div class="chip"><div class="val">${fmt(tpv)}</div><div class="lbl">TPV</div></div>`;
+    <div class="chip"><div class="val">${fmt(tpv)}</div><div class="lbl">TPV</div></div>
+    <div class="chip"><div class="val">${fmt(clientes)}</div><div class="lbl">Clientes / Otros</div></div>
+  `;
   lista.innerHTML = [...trips].reverse().map(r => {
     const imp = r.importe||0, pea = r.peaje||0, tot = r.total||0;
     return `<div class="trip-item">
