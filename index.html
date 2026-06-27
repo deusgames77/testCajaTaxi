@@ -49,19 +49,17 @@
   .b-cl{background:#fff8e1;color:#f57f17}.b-otro{background:#f3e5f5;color:#6a1b9a}
   .config-item{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid #f0f0f0}
   .config-item:last-child{border-bottom:none}
-  .config-val{font-weight:700;color:var(--dark);font-size:.85rem;word-break:break-all;max-width:60%;text-align:right}
+  .config-val{font-weight:700;color:var(--dark);font-size:.82rem;word-break:break-all;max-width:60%;text-align:right}
   #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1a2e;color:#fff;padding:12px 22px;border-radius:30px;font-size:.88rem;font-weight:600;opacity:0;transition:all .3s;z-index:999;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.25)}
   #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   #setup{display:none;position:fixed;inset:0;background:var(--dark);z-index:1000;padding:32px 24px;color:#fff;overflow-y:auto}
   #setup h2{font-size:1.5rem;margin-bottom:8px}
-  #setup p{opacity:.8;font-size:.9rem;margin-bottom:20px;line-height:1.5}
+  #setup p{opacity:.8;font-size:.9rem;margin-bottom:16px;line-height:1.5}
   #setup label{color:rgba(255,255,255,.8);margin-bottom:5px;display:block;font-size:.85rem;font-weight:600}
   #setup input{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3);color:#fff;margin-bottom:16px}
   #setup input::placeholder{color:rgba(255,255,255,.4)}
   #setup input:focus{border-color:#64B5F6}
-  #setup .step{margin-bottom:22px}
-  #setup strong{display:block;margin-bottom:6px;font-size:.95rem}
-  #setup code{background:rgba(255,255,255,.15);padding:2px 7px;border-radius:5px;font-size:.83rem}
+  #setup code{background:rgba(255,255,255,.15);padding:2px 7px;border-radius:5px;font-size:.82rem}
   .empty{text-align:center;padding:36px 20px;color:var(--muted)}
   .empty .icon{font-size:2.5rem;margin-bottom:10px}
   .empty p{font-size:.9rem;line-height:1.5}
@@ -72,19 +70,15 @@
 </head>
 <body>
 
-<!-- Setup -->
 <div id="setup">
   <h2>🚕 Taxi Caja</h2>
-  <p>Introduce la URL del Apps Script de tu Google Sheet para conectar la app.</p>
-  <div class="step">
-    <strong>URL del Web App (Apps Script)</strong>
-    <p style="font-size:.82rem;margin-bottom:10px">
-      En tu Sheet: <code>Extensiones → Apps Script → Implementar → Gestionar implementaciones</code><br>
-      Copia la URL que empieza por <code>https://script.google.com/macros/s/…</code>
-    </p>
-    <label>Web App URL</label>
-    <input type="url" id="cfg-url" placeholder="https://script.google.com/macros/s/…/exec"/>
-  </div>
+  <p>Introduce la URL del Apps Script de tu Google Sheet.</p>
+  <p style="font-size:.82rem">
+    En el Sheet: <code>Extensiones → Apps Script → Implementar → Gestionar implementaciones</code><br><br>
+    Copia la URL que empieza por <code>https://script.google.com/macros/s/…/exec</code>
+  </p>
+  <label>URL del Web App</label>
+  <input type="url" id="cfg-url" placeholder="https://script.google.com/macros/s/…/exec"/>
   <button class="btn btn-primary" onclick="saveSetup()">Guardar y conectar</button>
   <p style="font-size:.75rem;opacity:.45;margin-top:16px;text-align:center">Los datos se guardan solo en este dispositivo</p>
 </div>
@@ -99,7 +93,6 @@
   <button onclick="switchTab('ajustes',this)">Ajustes</button>
 </nav>
 
-<!-- NUEVO -->
 <div class="view active" id="view-nuevo">
   <div class="card">
     <div class="card-title">Nuevo trayecto</div>
@@ -120,7 +113,6 @@
   </div>
 </div>
 
-<!-- HOY -->
 <div class="view" id="view-hoy">
   <div id="hoy-chips"></div>
   <div class="card">
@@ -129,12 +121,11 @@
   </div>
 </div>
 
-<!-- AJUSTES -->
 <div class="view" id="view-ajustes">
   <div class="card">
     <div class="card-title">Conexión</div>
     <div id="cfg-info"></div>
-    <button class="btn btn-secondary" onclick="showSetup()">Cambiar URL del script</button>
+    <button class="btn btn-secondary" onclick="showSetup()">Cambiar URL</button>
     <button class="btn btn-danger" onclick="clearCfg()">Borrar configuración</button>
   </div>
   <div class="card">
@@ -152,7 +143,6 @@ const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio",
 let CFG = {};
 let payOpts = [];
 
-// ── Init ──────────────────────────────────────────────────────────
 window.addEventListener('load', () => {
   CFG = JSON.parse(localStorage.getItem('taxiCFG') || '{}');
   setToday();
@@ -160,7 +150,7 @@ window.addEventListener('load', () => {
   if (!CFG.url) {
     document.getElementById('setup').style.display = 'block';
   } else {
-    loadConfig().then(() => {});
+    loadConfig();
     loadHoy();
   }
 });
@@ -176,7 +166,6 @@ function updateHeaderDate() {
     `${dias[d.getDay()]} ${d.getDate()} de ${MESES[d.getMonth()]} de ${d.getFullYear()}`;
 }
 
-// ── Setup ─────────────────────────────────────────────────────────
 function showSetup() { document.getElementById('setup').style.display = 'block'; }
 
 function saveSetup() {
@@ -186,7 +175,7 @@ function saveSetup() {
   localStorage.setItem('taxiCFG', JSON.stringify(CFG));
   document.getElementById('setup').style.display = 'none';
   toast('✓ Conectado');
-  loadConfig().then(() => {});
+  loadConfig();
   loadHoy();
 }
 
@@ -195,26 +184,13 @@ function clearCfg() {
   localStorage.clear(); location.reload();
 }
 
-// ── API ───────────────────────────────────────────────────────────
-async function apiGet(params) {
-  const qs = new URLSearchParams(params).toString();
-  const resp = await fetch(`${CFG.url}?${qs}`);
-  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-  return resp.json();
-}
-
-async function apiPost(body) {
-  // Apps Script no permite CORS en POST directo.
-  // Solución: enviamos los datos como parámetros GET en una segunda llamada,
-  // usando action=write para que doGet los procese y escriba en el sheet.
-  const params = { action: 'write', ...body };
-  // Convertir todos los valores a string para URLSearchParams
-  Object.keys(params).forEach(k => params[k] = String(params[k]));
+// ── API: todo via GET a Apps Script ───────────────────────────────
+async function api(params) {
   const qs = new URLSearchParams(params).toString();
   const resp = await fetch(`${CFG.url}?${qs}`);
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
   const data = await resp.json();
-  if (!data.ok) throw new Error(data.error || 'Error al guardar');
+  if (!data.ok) throw new Error(data.error || 'Error desconocido');
   return data;
 }
 
@@ -222,17 +198,15 @@ async function apiPost(body) {
 async function loadConfig() {
   if (!CFG.url) return;
   try {
-    const data = await apiGet({ action: 'config' });
-    if (data.ok && data.opciones && data.opciones.length) {
+    const data = await api({ action: 'config' });
+    if (data.opciones && data.opciones.length) {
       payOpts = data.opciones;
-      // Cache locally
       localStorage.setItem('taxiPayOpts', JSON.stringify(payOpts));
     }
   } catch(e) {
-    // Fallback to cached
     const cached = localStorage.getItem('taxiPayOpts');
     if (cached) payOpts = JSON.parse(cached);
-    console.warn('Config load error', e);
+    console.warn('Config error:', e.message);
   }
   renderPaySelect();
   renderCfgPagos();
@@ -247,9 +221,9 @@ async function reloadConfig() {
 
 function renderPaySelect() {
   const sel = document.getElementById('f-tipo');
-  const current = sel.value;
+  const cur = sel.value;
   sel.innerHTML = '<option value="">— Selecciona —</option>' +
-    payOpts.map(o => `<option value="${o}"${o===current?' selected':''}>${o}</option>`).join('');
+    payOpts.map(o => `<option value="${o}"${o===cur?' selected':''}>${o}</option>`).join('');
 }
 
 function renderCfgPagos() {
@@ -259,7 +233,7 @@ function renderCfgPagos() {
 }
 
 function renderCfgInfo() {
-  const short = CFG.url ? CFG.url.replace('https://','').substring(0,38)+'…' : '—';
+  const short = CFG.url ? CFG.url.substring(0, 42) + '…' : '—';
   document.getElementById('cfg-info').innerHTML =
     `<div class="config-item"><span>Web App URL</span><span class="config-val">${short}</span></div>`;
 }
@@ -272,11 +246,11 @@ async function guardarTrayecto() {
   const peaje   = document.getElementById('f-peaje').value;
   const notas   = document.getElementById('f-notas').value.trim();
 
-  if (!fecha)           { toast('Selecciona una fecha');           return; }
-  if (!tipo)            { toast('Selecciona tipo de pago');        return; }
-  if (importe === '')   { toast('Introduce el importe');           return; }
-  if (parseFloat(importe) < 0) { toast('El importe no puede ser negativo'); return; }
-  if (peaje !== '' && parseFloat(peaje) < 0) { toast('El peaje no puede ser negativo'); return; }
+  if (!fecha)         { toast('Selecciona una fecha');           return; }
+  if (!tipo)          { toast('Selecciona tipo de pago');        return; }
+  if (importe === '') { toast('Introduce el importe');           return; }
+  if (parseFloat(importe) < 0) { toast('Importe no puede ser negativo'); return; }
+  if (peaje !== '' && parseFloat(peaje) < 0) { toast('Peaje no puede ser negativo'); return; }
 
   const [y, m, d] = fecha.split('-');
   const fechaSheet = `${d}/${m}/${y}`;
@@ -286,7 +260,8 @@ async function guardarTrayecto() {
   btn.disabled = true;
 
   try {
-    await apiPost({
+    await api({
+      action:  'write',
       fecha:   fechaSheet,
       tipo,
       importe: parseFloat(importe),
@@ -298,11 +273,10 @@ async function guardarTrayecto() {
     document.getElementById('f-importe').value = '';
     document.getElementById('f-peaje').value   = '';
     document.getElementById('f-notas').value   = '';
-    // Actualiza hoy si la fecha guardada es hoy
     const todayIso = new Date().toISOString().split('T')[0];
     if (fecha === todayIso) loadHoy();
   } catch(e) {
-    toast('Error al guardar: ' + e.message);
+    toast('Error: ' + e.message);
     console.error(e);
   } finally {
     btn.innerHTML = 'Guardar trayecto';
@@ -316,15 +290,13 @@ async function loadHoy() {
   const now = new Date();
   const d = String(now.getDate()).padStart(2,'0');
   const m = String(now.getMonth()+1).padStart(2,'0');
-  const y = now.getFullYear();
-  const hoyStr = `${d}/${m}/${y}`;
+  const hoyStr = `${d}/${m}/${now.getFullYear()}`;
 
   document.getElementById('hoy-lista').innerHTML = '<div class="loading">Cargando…</div>';
   document.getElementById('hoy-chips').innerHTML = '';
 
   try {
-    const data = await apiGet({ action: 'hoy', fecha: hoyStr });
-    if (!data.ok) throw new Error(data.error || 'Error desconocido');
+    const data = await api({ action: 'hoy', fecha: hoyStr });
     renderHoy(data.trayectos || []);
   } catch(e) {
     document.getElementById('hoy-lista').innerHTML =
@@ -343,38 +315,28 @@ function badgeClass(tipo) {
 function renderHoy(trips) {
   const chips = document.getElementById('hoy-chips');
   const lista = document.getElementById('hoy-lista');
-
   if (!trips.length) {
     chips.innerHTML = '';
-    lista.innerHTML = `<div class="empty">
-      <div class="icon">🚗</div>
-      <p>Sin trayectos registrados hoy.<br>Usa <strong>+ Trayecto</strong> para añadir.</p>
-    </div>`;
+    lista.innerHTML = `<div class="empty"><div class="icon">🚗</div>
+      <p>Sin trayectos hoy.<br>Usa <strong>+ Trayecto</strong> para añadir.</p></div>`;
     return;
   }
-
   let total=0, peajes=0, ef=0, tpv=0, resto=0;
   trips.forEach(r => {
-    total  += r.total  || 0;
-    peajes += r.peaje  || 0;
+    total += r.total||0; peajes += r.peaje||0;
     const t = (r.tipo||'').toLowerCase();
-    if (t==='efectivo') ef   += r.total||0;
-    else if (t==='tpv') tpv  += r.total||0;
-    else                resto+= r.total||0;
+    if (t==='efectivo') ef+=r.total||0;
+    else if (t==='tpv') tpv+=r.total||0;
+    else resto+=r.total||0;
   });
-
   chips.innerHTML = `
     <div class="chip full highlight"><div class="val">${fmt(total)}</div><div class="lbl">Total del día</div></div>
     <div class="chip"><div class="val">${trips.length}</div><div class="lbl">Trayectos</div></div>
     <div class="chip"><div class="val">${fmt(peajes)}</div><div class="lbl">Peajes</div></div>
     <div class="chip"><div class="val">${fmt(ef)}</div><div class="lbl">Efectivo</div></div>
-    <div class="chip"><div class="val">${fmt(tpv)}</div><div class="lbl">TPV</div></div>
-  `;
-
+    <div class="chip"><div class="val">${fmt(tpv)}</div><div class="lbl">TPV</div></div>`;
   lista.innerHTML = [...trips].reverse().map(r => {
-    const imp = r.importe || 0;
-    const pea = r.peaje   || 0;
-    const tot = r.total   || 0;
+    const imp = r.importe||0, pea = r.peaje||0, tot = r.total||0;
     return `<div class="trip-item">
       <div class="trip-left">
         <div class="tipo">${r.tipo||'—'}<span class="badge ${badgeClass(r.tipo)}">${r.tipo||'—'}</span></div>
@@ -382,15 +344,13 @@ function renderHoy(trips) {
       </div>
       <div class="trip-right">
         <div class="total">${fmt(tot)}</div>
-        ${pea>0
-          ? `<div class="detail">imp. ${fmt(imp)} + peaje ${fmt(pea)}</div>`
-          : `<div class="detail">${fmt(imp)}</div>`}
+        ${pea>0 ? `<div class="detail">imp. ${fmt(imp)} + peaje ${fmt(pea)}</div>`
+                : `<div class="detail">${fmt(imp)}</div>`}
       </div>
     </div>`;
   }).join('');
 }
 
-// ── Utils ─────────────────────────────────────────────────────────
 function fmt(n) { return (parseFloat(n)||0).toFixed(2).replace('.',',') + ' €'; }
 
 function toast(msg) {
